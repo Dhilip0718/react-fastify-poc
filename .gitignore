@@ -7,6 +7,7 @@ node_modules
 
 # Local env files
 .env
+.env*.local
 .env.local
 .env.development.local
 .env.test.local
@@ -27,6 +28,9 @@ out/
 build
 dist
 
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Debug
 npm-debug.log*
