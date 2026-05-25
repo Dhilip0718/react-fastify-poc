@@ -37,3 +37,11 @@ For older commits already on the remote, history rewrite may be required; warn t
 
 - Prefer telling the user to run `git commit` themselves when possible.
 - If the user asks you to commit, keep messages short and free of agent attribution.
+
+## Cursor IDE setting (required)
+
+Disable **Git commit attribution** so Cursor stops injecting the co-author line automatically:
+
+**Cursor → Settings → General → Agents → Git commit attribution → Off**
+
+Agent commits from the terminal may still get the trailer until this is off; use `git log -1 --format=full` before every push.

@@ -1,41 +1,38 @@
 import fastify from 'fastify';
-import cors from "@fastify/cors";
+import cors from '@fastify/cors';
+import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
+import { appRouter } from './router';
 
-import { UserContextSchema, DepartmentContextSchema } from '@repo/schemas';
-
-
-const server = fastify( {
-    logger: true, //For the Observability POV
+const server = fastify({
+  logger: true,
+  routerOptions: {
+    maxParamLength: 5000,
+  },
 });
 
-server.register(cors, {
-    origin: '*',
-})
+const start = async () => {
+  try {
+    await server.register(cors, {
+      origin: '*',
+    });
 
-server.get('/ping', async () => {
-    return { status: 'ok', message: 'The ping was successfull'}
-})
+    await server.register(fastifyTRPCPlugin, {
+      prefix: '/trpc',
+      trpcOptions: {
+        router: appRouter,
+      },
+    });
 
-const start = async() => {
-    try {
-        await server.listen({ port: 3001, host: '0.0.0.0' });
-        server.log.info(`Server is running on ${server.server.address()}`);
-    } catch (error) {
-        server.log.error(error);
-        process.exit(1);
-    }
-}
+    server.get('/ping', async () => {
+      return { status: 'ok', message: 'The ping was successfull' };
+    });
+
+    await server.listen({ port: 3001, host: '0.0.0.0' });
+    server.log.info(`Server is running on ${server.server.address()}`);
+  } catch (error) {
+    server.log.error(error);
+    process.exit(1);
+  }
+};
 
 start();
-
-//Notes: Steps
-/*(Fastify)
-Import the needed modules
-Create the server instance const server 
-cors setup
-define get endpoint
-define start function
-start the server
-
-
-*/
