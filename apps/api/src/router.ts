@@ -1,24 +1,27 @@
 import { router, publicProcedure } from './trpc';
 import { DepartmentContextSchema,UserContextSchema } from '@repo/schemas';
+import { getMeetingsProvider } from './meetingsProvider';
+import { getIncidentsProvider } from './incidentProvider';
 
 export const appRouter = router( {
-    getDashboardContext: publicProcedure.input(UserContextSchema).query(
-        async( { input: Usercontext })=> {
-            const { department } = Usercontext;
+    getDashboardContext: publicProcedure.input(UserContextSchema).output(DepartmentContextSchema).query(
+        async({input}) => {
+            const startTime = Date.now();
 
-            const mockData = {
-                nexMeeting: {
-                  title: department === 'IT' ? 'Architecture Review' : 'Quarterly Planning',
-                  time: '10:00 AM',
+            const [meetings, incidents] = await Promise.all([
+                getMeetingsProvider(input.department),
+                getIncidentsProvider(input.department),
+            ])
+            console.log(`Time taken: ${Date.now() - startTime}ms`);
+
+            return {
+                nexMeeting: meetings[0] ?? {
+                    title: 'No meetings scheduled',
+                    time: '—',
                 },
-                incidents: {
-                  id: 'INC-001',
-                  severity: department === 'IT' ? 'high' : 'low' as 'high' | 'low', // Cast to match enum
-                  message: department === 'IT' ? 'Database latency' : 'Standard maintenance',
-                }
-              };
-              return {mockData};
-        }
-    )
+                incidents,
+            };
+        },
+    ),
 });
 export type AppRouter = typeof appRouter;
