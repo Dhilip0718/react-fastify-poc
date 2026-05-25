@@ -12,7 +12,7 @@ server.register(cors, {
     origin: '*',
 })
 
-server.get('ping', async () => {
+server.get('/ping', async () => {
     return { status: 'ok', message: 'The ping was successfull'}
 })
 
