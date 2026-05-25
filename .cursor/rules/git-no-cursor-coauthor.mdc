@@ -1,0 +1,39 @@
+---
+description: Git commits must not credit Cursor as co-author (keeps GitHub contributors clean)
+alwaysApply: true
+---
+
+# Git commits — no Cursor co-author
+
+## Do not add Cursor attribution
+
+- **Never** add `Co-authored-by: Cursor <cursoragent@cursor.com>` (or any Cursor co-author line) to commit messages.
+- When creating commits for the user, use **only** their author identity. Do not append co-author trailers.
+- Do not use commit templates or messages that include Cursor attribution.
+
+## Before pushing
+
+If you run or suggest `git push`, first ensure recent commits are clean:
+
+```bash
+git log -3 --format=full | grep -i "Co-authored-by: Cursor" && echo "STOP: remove Cursor co-author before push"
+```
+
+If any commit contains that line, fix it **before** push:
+
+```bash
+git commit --amend
+# Delete the Co-authored-by: Cursor line, save, and exit the editor.
+```
+
+For older commits already on the remote, history rewrite may be required; warn the user before `git push --force`.
+
+## Rewriting history
+
+- Removing co-author lines does **not** add Cursor again.
+- Only **new** commits whose messages include `Co-authored-by: Cursor` will credit Cursor on GitHub.
+
+## Prefer user-owned commits
+
+- Prefer telling the user to run `git commit` themselves when possible.
+- If the user asks you to commit, keep messages short and free of agent attribution.
